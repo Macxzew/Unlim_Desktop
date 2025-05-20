@@ -77,44 +77,57 @@ if (electron.contextBridge && electron.ipcRenderer) {
                                 'img[src^="blob:"][class*="rounded-full"]'
                             );
                             if (stillThere) {
-                                const link = document.querySelector('a[title="Files"]');
-                                if (link && link.style.pointerEvents === 'none') {
-                                    link.style.pointerEvents = 'auto';
-                                    link.style.opacity = '1';
-                                    console.log('✅ Profile image stable — Files button re-enabled');
+                                let attempts = 0;
+                                const maxAttempts = 3;
 
-                                    // Ajoute le bouton logout
-                                    const parentDiv = stillThere.parentElement;
-                                    if (parentDiv && !document.getElementById('logout-btn')) {
-                                        const logoutBtn = document.createElement('button');
-                                        logoutBtn.id = 'logout-btn';
-                                        logoutBtn.textContent = '👋';
-                                        logoutBtn.style.marginLeft = '10px';
-                                        logoutBtn.style.padding = '4px 8px';
-                                        logoutBtn.style.border = 'none';
-                                        logoutBtn.style.borderRadius = '6px';
-                                        logoutBtn.style.color = 'white';
-                                        logoutBtn.style.cursor = 'pointer';
-                                        logoutBtn.style.transition = 'opacity 0.2s';
-
-                                        logoutBtn.onmouseenter = () => logoutBtn.style.opacity = '0.8';
-                                        logoutBtn.onmouseleave = () => logoutBtn.style.opacity = '1';
-
-                                        logoutBtn.onclick = () => {
-                                            electron.ipcRenderer.invoke('logout-user');
-                                        };
-
-                                        parentDiv.appendChild(logoutBtn);
+                                const interval = setInterval(() => {
+                                    const link = document.querySelector('a[title="Files"]');
+                                    if (link && link.style.pointerEvents === 'none') {
+                                        link.style.pointerEvents = 'auto';
+                                        link.style.opacity = '1';
+                                        console.log(`🔁 Attempt ${attempts + 1}: Files button re-enabled`);
                                     }
 
-                                    // Simule clic sur "Files"
-                                    link.click();
-                                    console.log('🖱️ Simulated click on "Files" button');
+                                    attempts++;
+                                    if (link && link.style.pointerEvents === 'auto') {
+                                        // Ajouter bouton logout
+                                        const parentDiv = stillThere.parentElement;
+                                        if (parentDiv && !document.getElementById('logout-btn')) {
+                                            const logoutBtn = document.createElement('button');
+                                            logoutBtn.id = 'logout-btn';
+                                            logoutBtn.textContent = '👋';
+                                            logoutBtn.style.marginLeft = '10px';
+                                            logoutBtn.style.padding = '4px 8px';
+                                            logoutBtn.style.border = 'none';
+                                            logoutBtn.style.borderRadius = '6px';
+                                            logoutBtn.style.color = 'white';
+                                            logoutBtn.style.cursor = 'pointer';
+                                            logoutBtn.style.transition = 'opacity 0.2s';
 
-                                    observer.disconnect(); // stop watching
-                                }
+                                            logoutBtn.onmouseenter = () => logoutBtn.style.opacity = '0.8';
+                                            logoutBtn.onmouseleave = () => logoutBtn.style.opacity = '1';
+
+                                            logoutBtn.onclick = () => {
+                                                electron.ipcRenderer.invoke('logout-user');
+                                            };
+
+                                            parentDiv.appendChild(logoutBtn);
+                                        }
+
+                                        // Clic auto
+                                        link.click();
+                                        console.log('🖱️ Simulated click on "Files" button');
+
+                                        clearInterval(interval);
+                                        observer.disconnect();
+                                    } else if (attempts >= maxAttempts) {
+                                        console.warn('⚠️ Max attempts reached to enable Files button');
+                                        clearInterval(interval);
+                                        observer.disconnect();
+                                    }
+                                }, 1000); // check toutes les 1s
                             }
-                        }, 1000); // attente 2 secondes
+                        }, 1500);
                     }
                 });
 

@@ -1,0 +1,23 @@
+{
+  "name": "unlim_desktop",
+  "version": "1.0",
+  "author": "Macxzew",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "clean": "del package-lock.json",
+    
+    "build-win": "npx electron-packager . Unlim --platform=win32 --arch=x64 --electron-version=26.2.3 --icon=./assets/app-icon.ico && (if exist Unlim-win32-x64 (cd Unlim-win32-x64 && del chrome_100_percent.pak chrome_200_percent.pak d3dcompiler_47.dll libEGL.dll libGLESv2.dll LICENSE LICENSES.chromium.html snapshot_blob.bin version version.dll vk_swiftshader.dll vk_swiftshader_icd.json vulkan-1.dll) else echo Folder does not exist)",
+    
+    "build-mac": "npx electron-packager . Unlim --platform=darwin --arch=x64 --electron-version=26.2.3 --icon=./assets/app-icon.icns && [ -d Unlim-darwin-x64 ] && cd Unlim-darwin-x64 && rm -f LICENSE LICENSES.chromium.html version || echo 'Folder does not exist'",
+    
+    "build-lin": "npx electron-packager . Unlim --platform=linux --arch=x64 --electron-version=26.2.3 --icon=./assets/app-icon.png",
+    
+    "build-all": "npm run build-win && npm run build-mac && npm run build-lin"
+  },
+  "devDependencies": {
+    "electron-packager": "latest",
+    "electron": "github:castlabs/electron-releases#v34.1.1+wvcus",
+    "rimraf": "^3.0.2"
+  }
+}

@@ -1,4 +1,4 @@
-<h1 align="center">Unlim_Desktop <img src="assets/app-icon.png" width="20px"></h1>
+<h1 align="center">Unlim Desktop <img src="assets/app-icon.png" width="40px"></h1>
 
 > 🖥️ Unlim_Desktop est une application desktop cloud basée sur Telegram. 
 
